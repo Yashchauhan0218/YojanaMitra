@@ -1,0 +1,166 @@
+// Prisma Schema for YojanaMitra
+// PostgreSQL Database Connection
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SchemeLevel {
+  CENTRAL
+  STATE
+}
+
+enum CriterionOperator {
+  eq
+  neq
+  gte
+  gt
+  lte
+  lt
+  in
+  not_in
+  exists
+}
+
+enum EligibilityStatus {
+  POTENTIALLY_ELIGIBLE
+  NOT_ELIGIBLE
+  NEEDS_INFORMATION
+}
+
+model Scheme {
+  id              String         @id @default(uuid())
+  code            String         @unique
+  titleEn         String
+  titleHi         String
+  summaryEn       String         @db.Text
+  summaryHi       String         @db.Text
+  detailsEn       String?        @db.Text
+  detailsHi       String?        @db.Text
+  benefitsEn      String         @db.Text
+  benefitsHi      String         @db.Text
+  category        String         // Agriculture, Healthcare, Education, Social Security, Housing, Women & Child
+  level           SchemeLevel    @default(CENTRAL)
+  state           String?        // Specific Indian State if level is STATE
+  status          PublishStatus  @default(PUBLISHED)
+  sourceUrl       String
+  applicationUrl  String?
+  verifiedAt      DateTime       @default(now())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  criteria        SchemeCriterion[]
+  sources         SchemeSource[]
+  runResults      EligibilityRunScheme[]
+
+  @@index([category])
+  @@index([level, state])
+  @@index([status])
+}
+
+model SchemeCriterion {
+  id              String            @id @default(uuid())
+  schemeId        String
+  scheme          Scheme            @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  field           String            // age, gender, annual_income, caste_category, state, occupation, is_student, etc.
+  operator        CriterionOperator
+  value           Json              // raw scalar value, range, array of allowed items
+  labelEn         String
+  labelHi         String
+  isMandatory     Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([schemeId])
+  @@index([field])
+}
+
+model SchemeSource {
+  id              String    @id @default(uuid())
+  schemeId        String
+  scheme          Scheme    @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  title           String
+  url             String
+  verifiedDate    DateTime  @default(now())
+  sourceType      String    // GOVERNMENT_PORTAL, OFFICIAL_GAZETTE, MINISTRY_PORTAL
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  @@index([schemeId])
+}
+
+model UserProfile {
+  id                String           @id @default(uuid())
+  sessionId         String?          @unique
+  phone             String?
+  state             String?
+  district          String?
+  age               Int?
+  gender            String?
+  annualIncome      Float?
+  casteCategory     String?
+  occupation        String?
+  isDisability      Boolean?         @default(false)
+  isStudent         Boolean?         @default(false)
+  attributes        Json?            // additional flexible key-value attributes
+  preferredLanguage String           @default("hi") // 'hi' or 'en'
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  eligibilityRuns   EligibilityRun[]
+}
+
+model EligibilityRun {
+  id               String                 @id @default(uuid())
+  userId           String?
+  user             UserProfile?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userInput        String?                @db.Text
+  extractedProfile Json
+  status           String                 @default("COMPLETED")
+  createdAt        DateTime               @default(now())
+
+  results          EligibilityRunScheme[]
+}
+
+model EligibilityRunScheme {
+  id               String            @id @default(uuid())
+  runId            String
+  run              EligibilityRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  schemeId         String
+  scheme           Scheme            @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  status           EligibilityStatus
+  passedCriteria   Json
+  failedCriteria   Json
+  unknownCriteria  Json
+  explanationEn    String?           @db.Text
+  explanationHi    String?           @db.Text
+  createdAt        DateTime          @default(now())
+
+  @@index([runId])
+  @@index([schemeId])
+  @@index([status])
+}
+
+model AdminAuditLog {
+  id          String   @id @default(uuid())
+  adminAction String   // CREATE_SCHEME, UPDATE_SCHEME, PUBLISH_SCHEME, ARCHIVE_SCHEME
+  entityId    String?
+  entityType  String
+  performedBy String   // admin API client or user id
+  metadata    Json?
+  timestamp   DateTime @default(now())
+
+  @@index([adminAction])
+  @@index([timestamp])
+}
