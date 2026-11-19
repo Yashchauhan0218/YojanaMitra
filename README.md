@@ -28,7 +28,14 @@
 
 ```
 YojanaMitra/
-├── frontend/             # Next.js (App Router), TypeScript, Tailwind CSS, Lucide React
+├── frontend-react/        # Pure React SPA (Vite + React Router + Tailwind CSS)
+│   ├── src/
+│   │   ├── pages/        # Routes: Home, Assistant, Schemes, Scheme Details, About, Admin
+│   │   ├── components/   # Navbar, Footer, SchemeCard
+│   │   ├── context/      # Bilingual LanguageProvider (Hindi/English)
+│   │   ├── hooks/        # useVoiceRecognition (Web Speech API)
+│   │   └── lib/          # API Client & TypeScript Types
+├── frontend-next/         # Next.js Fullstack (App Router, Turbopack, Tailwind CSS)
 │   ├── src/
 │   │   ├── app/          # App Router: Home, Assistant, Schemes, Scheme Details, About, Admin
 │   │   ├── components/   # Navbar, Footer, SchemeCard
@@ -111,15 +118,30 @@ npm run dev
 
 ### 3. Setup Frontend
 
-```bash
-cd ../frontend
+You have two frontend options available:
 
-# Install dependencies
+#### Option A: Pure React SPA (Vite + React Router)
+```bash
+cd frontend-react
+
+# Install dependencies (already completed)
 npm install
 
-# Start development server
+# Start Vite development server
 npm run dev
-# Frontend runs at http://localhost:3000
+# React App runs at http://localhost:3000
+```
+
+#### Option B: Next.js App Router
+```bash
+cd frontend-next
+
+# Install dependencies (already completed)
+npm install
+
+# Start Next.js development server
+npm run dev
+# Next.js App runs at http://localhost:3000
 ```
 
 ---
