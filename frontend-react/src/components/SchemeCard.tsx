@@ -7,20 +7,12 @@ import {
   ShieldCheck,
   CheckCircle2,
   Calendar,
+  Landmark,
 } from 'lucide-react';
 
 interface SchemeCardProps {
   scheme: Scheme;
 }
-
-const categoryColors: Record<string, string> = {
-  Agriculture: 'bg-green-100 text-green-800 border-green-200',
-  Healthcare: 'bg-blue-100 text-blue-800 border-blue-200',
-  Education: 'bg-amber-100 text-amber-800 border-amber-200',
-  'Social Security': 'bg-purple-100 text-purple-800 border-purple-200',
-  'Women & Child': 'bg-pink-100 text-pink-800 border-pink-200',
-  Housing: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-};
 
 export default function SchemeCard({ scheme }: SchemeCardProps) {
   const { language } = useLanguage();
@@ -31,81 +23,93 @@ export default function SchemeCard({ scheme }: SchemeCardProps) {
   const summary = isHi ? scheme.summaryHi : scheme.summaryEn;
   const benefits = isHi ? scheme.benefitsHi : scheme.benefitsEn;
 
-  const badgeClass =
-    categoryColors[scheme.category] || 'bg-emerald-100 text-emerald-800 border-emerald-200';
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between hover:border-emerald-600/40 group overflow-hidden">
-      <div className="p-6">
-        {/* Top Badges */}
+    <div className="bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] shadow-xs hover:border-[#2F6B52]/50 hover:shadow-sm transition-all duration-150 flex flex-col justify-between group overflow-hidden">
+      <div className="p-5 sm:p-6">
+        {/* Top Badges & Meta */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${badgeClass}`}>
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#E8F0E8] text-[#173F35] border border-[#E3E7E1]">
               {scheme.category}
             </span>
-            <span className="text-xs font-medium px-2 py-0.5 rounded-sm bg-gray-100 text-gray-700 font-mono">
+            <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md bg-[#F7F5EF] text-[#69756D] border border-[#E3E7E1]">
               {scheme.code}
             </span>
           </div>
 
-          <div className="flex items-center gap-1 text-xs font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{scheme.level === 'CENTRAL' ? (isHi ? 'केंद्रीय' : 'Central') : scheme.state || 'State'}</span>
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[#173F35]">
+            <Landmark className="w-3.5 h-3.5 text-[#2F6B52]" />
+            <span>
+              {scheme.level === 'CENTRAL'
+                ? isHi
+                  ? 'केंद्रीय सरकार'
+                  : 'Central Gov'
+                : scheme.state || 'State'}
+            </span>
           </div>
         </div>
 
         {/* Scheme Titles */}
         <Link to={`/schemes/${encodeURIComponent(scheme.code || scheme.id)}`}>
-          <h3 className="text-lg font-bold text-gray-900 group-hover:text-emerald-800 transition leading-snug mb-1">
+          <h3 className="text-base sm:text-lg font-bold text-[#202923] group-hover:text-[#173F35] transition-colors leading-snug mb-1">
             {primaryTitle}
           </h3>
         </Link>
-        <p className="text-xs text-gray-500 mb-3 italic">{secondaryTitle}</p>
+        <p className="text-xs text-[#69756D] mb-3 line-clamp-1 font-normal">
+          {secondaryTitle}
+        </p>
 
-        {/* Summary */}
-        <p className="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed">{summary}</p>
+        {/* Short Summary */}
+        <p className="text-xs sm:text-sm text-[#202923]/90 line-clamp-2 mb-4 leading-relaxed font-normal">
+          {summary}
+        </p>
 
-        {/* Key Benefits Highlight Box */}
-        <div className="bg-emerald-50/70 border border-emerald-200/50 rounded-lg p-3 mb-4">
-          <div className="text-xs font-bold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5 mb-1">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-            <span>{isHi ? 'प्रमुख लाभ' : 'Key Benefit'}</span>
+        {/* Key Benefits Highlight Box (Clean warm ivory surface, no gradient) */}
+        {benefits && (
+          <div className="bg-[#F7F5EF] border border-[#E3E7E1] rounded-lg p-3 mb-4">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#173F35] flex items-center gap-1.5 mb-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#2F6B52]" />
+              <span>{isHi ? 'प्रमाणित सरकारी लाभ' : 'Verified Benefit'}</span>
+            </div>
+            <p className="text-xs text-[#202923] font-medium line-clamp-2 leading-relaxed">
+              {benefits}
+            </p>
           </div>
-          <p className="text-xs text-emerald-950 font-medium line-clamp-2">{benefits}</p>
-        </div>
+        )}
 
-        {/* Criteria summary */}
+        {/* Eligibility Criteria count */}
         {scheme.criteria && scheme.criteria.length > 0 && (
-          <div className="text-xs text-gray-500 flex items-center gap-2">
-            <span className="font-medium text-gray-700">
-              {scheme.criteria.length} {isHi ? 'पात्रता शर्तें' : 'Eligibility Criteria'}
+          <div className="text-xs text-[#69756D] flex items-center gap-2 pt-1">
+            <span className="font-medium text-[#202923] flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#2F6B52]" />
+              {scheme.criteria.length} {isHi ? 'पात्रता नियम' : 'Criteria Rules'}
             </span>
-            <span>&bull;</span>
+            <span>•</span>
             <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-gray-400" />
-              {isHi ? 'सत्यापित' : 'Verified'}
+              <Calendar className="w-3 h-3 text-[#69756D]" />
+              {isHi ? 'आधिकारिक गजट से सत्यापित' : 'Official Guidelines'}
             </span>
           </div>
         )}
       </div>
 
       {/* Card Actions Footer */}
-      <div className="bg-gray-50/80 px-6 py-3 border-t border-gray-100 flex items-center justify-between text-xs">
+      <div className="bg-[#F7F5EF]/60 px-5 sm:px-6 py-3 border-t border-[#E3E7E1] flex items-center justify-between text-xs">
         <a
           href={scheme.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-gray-500 hover:text-emerald-800 flex items-center gap-1 transition"
+          className="text-[#69756D] hover:text-[#173F35] flex items-center gap-1 font-medium transition"
         >
-          <span>{isHi ? 'आधिकारिक पोर्टल' : 'Official Portal'}</span>
-          <ExternalLink className="w-3 h-3 text-gray-400" />
+          <span>{isHi ? 'सरकारी पोर्टल' : 'Official Portal'}</span>
+          <ExternalLink className="w-3 h-3" />
         </a>
 
         <Link
           to={`/schemes/${encodeURIComponent(scheme.code || scheme.id)}`}
-          className="font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 transition"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#173F35] hover:bg-[#2F6B52] text-[#FFFFFF] font-semibold text-xs transition"
         >
-          <span>{isHi ? 'विवरण एवं पात्रता' : 'Details & Eligibility'}</span>
+          <span>{isHi ? 'विवरण व पात्रता' : 'View Details'}</span>
           <ChevronRight className="w-3.5 h-3.5" />
         </Link>
       </div>

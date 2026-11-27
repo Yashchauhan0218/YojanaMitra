@@ -1,27 +1,25 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '../../context/LanguageContext';
 import { fetchSchemes, fetchCategories } from '../../lib/api';
-import { Scheme } from '../../lib/types';
+import type { Scheme } from '../../lib/types';
 import SchemeCard from '../../components/SchemeCard';
 import {
   Search,
-  Filter,
-  ShieldCheck,
   RotateCcw,
-  Layers,
-  Sparkles,
+  Landmark,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 function SchemesContent() {
   const searchParams = useSearchParams();
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const isHi = language === 'hi';
 
-  const initialSearch = searchParams.get('search') || '';
-  const initialCategory = searchParams.get('category') || 'All';
+  const initialSearch = searchParams?.get('search') || '';
+  const initialCategory = searchParams?.get('category') || 'All';
 
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -87,36 +85,40 @@ function SchemesContent() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8 sm:py-12">
+    <div className="bg-[#F7F5EF] min-h-screen py-8 sm:py-12 text-[#202923]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Title */}
+        {/* Editorial Page Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full mb-3">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md bg-[#E8F0E8] text-[#173F35] border border-[#E3E7E1] mb-2.5">
+            <Landmark className="w-3.5 h-3.5 text-[#2F6B52]" />
             <span>{isHi ? 'प्रमाणित सरकारी डेटाबेस' : 'Verified Welfare Directory'}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#202923] tracking-tight">
             {isHi ? 'सरकारी योजना निर्देशिका' : 'Government Welfare Schemes Directory'}
           </h1>
-          <p className="text-gray-600 text-sm sm:text-base mt-2 max-w-2xl">
+          <p className="text-xs sm:text-sm text-[#69756D] mt-1.5 max-w-2xl font-normal leading-relaxed">
             {isHi
-              ? 'केंद्र एवं राज्य सरकारों द्वारा संचालित सभी सत्यापित कल्याणकारी योजनाओं का अन्वेषण करें।'
-              : 'Browse authenticated central and state government schemes across sectors with verified criteria and authentic source portals.'}
+              ? 'केंद्र एवं राज्य सरकारों की सभी सत्यापित योजनाओं का अन्वेषण करें। पारदर्शी पात्रता नियम व आधिकारिक सरकारी पोर्टल।'
+              : 'Explore verified welfare schemes across sectors with deterministic criteria and official government application links.'}
           </p>
         </div>
 
-        {/* Filters and Search Bar */}
-        <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 mb-8 shadow-xs">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Minimal Fintech Filter Bar */}
+        <div className="bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-3.5 sm:p-4 mb-6 shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             {/* Search Input (5 Cols) */}
             <div className="md:col-span-5 relative">
-              <Search className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#69756D] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isHi ? 'योजना खोजें (जैसे: किसान, छात्रवृत्ति, आवास)...' : 'Search by name, code, or keyword...'}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                placeholder={
+                  isHi
+                    ? 'योजना खोजें (उदा: किसान, आवास, पेंशन)...'
+                    : 'Search by scheme name, code, or keyword...'
+                }
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-[#E3E7E1] text-xs sm:text-sm focus:outline-none focus:border-[#173F35] bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] transition"
               />
             </div>
 
@@ -125,11 +127,15 @@ function SchemesContent() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 bg-white"
+                className="w-full px-3 py-2 rounded-lg border border-[#E3E7E1] text-xs sm:text-sm focus:outline-none focus:border-[#173F35] bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] text-[#202923] font-medium transition"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat === 'All' ? (isHi ? 'सभी श्रेणियां (All Categories)' : 'All Categories') : cat}
+                    {cat === 'All'
+                      ? isHi
+                        ? 'सभी श्रेणियां (All Categories)'
+                        : 'All Categories'
+                      : cat}
                   </option>
                 ))}
               </select>
@@ -140,12 +146,12 @@ function SchemesContent() {
               <select
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 bg-white"
+                className="w-full px-3 py-2 rounded-lg border border-[#E3E7E1] text-xs sm:text-sm focus:outline-none focus:border-[#173F35] bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] text-[#202923] font-medium transition"
               >
                 <option value="">{isHi ? 'सभी राज्य' : 'All States'}</option>
-                {indianStates.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
+                {indianStates.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
                   </option>
                 ))}
               </select>
@@ -155,57 +161,75 @@ function SchemesContent() {
             <div className="md:col-span-1 flex items-center">
               <button
                 onClick={resetFilters}
-                className="w-full h-full py-2.5 px-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center justify-center text-xs font-semibold cursor-pointer"
-                title="Reset filters"
+                title={isHi ? 'फ़िल्टर हटाएं' : 'Reset Filters'}
+                className="w-full h-full min-h-[38px] px-2 py-2 border border-[#E3E7E1] bg-[#F7F5EF] hover:bg-[#E8F0E8] text-[#202923] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="md:hidden">{isHi ? 'रीसेट' : 'Reset'}</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Results Counter Bar */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-gray-600">
-            {isHi ? (
-              <>
-                कुल <span className="font-bold text-gray-900">{totalCount}</span> योजनाएं उपलब्ध
-              </>
-            ) : (
-              <>
-                Showing <span className="font-bold text-gray-900">{totalCount}</span> verified schemes
-              </>
+        {/* Results Counter and Active Filter Pills */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 text-xs text-[#69756D]">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[#202923]">
+              {isLoading ? (
+                isHi ? 'खोज जारी है...' : 'Searching...'
+              ) : (
+                isHi
+                  ? `${totalCount} प्रमाणित योजनाएं उपलब्ध हैं`
+                  : `Showing ${totalCount} verified schemes`
+              )}
+            </span>
+            {(search || selectedCategory !== 'All' || selectedState) && (
+              <span className="px-2 py-0.5 rounded-md bg-[#E8F0E8] text-[#173F35] font-semibold">
+                {isHi ? 'फ़िल्टर लागू' : 'Filtered'}
+              </span>
             )}
           </div>
+
+          {(search || selectedCategory !== 'All' || selectedState) && (
+            <button
+              onClick={resetFilters}
+              className="text-xs font-semibold text-[#173F35] hover:underline cursor-pointer"
+            >
+              {isHi ? 'सभी फ़िल्टर साफ़ करें' : 'Clear all filters'}
+            </button>
+          )}
         </div>
 
-        {/* Schemes Grid */}
+        {/* Schemes Results Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-72 rounded-xl bg-white border border-gray-200 animate-pulse p-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div
+                key={n}
+                className="h-72 rounded-xl bg-[#FFFFFF] border border-[#E3E7E1] animate-pulse p-5"
+              />
             ))}
           </div>
         ) : schemes.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center max-w-xl mx-auto">
-            <Layers className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
-              {isHi ? 'कोई योजना नहीं मिली' : 'No Schemes Found'}
+          <div className="text-center py-16 bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-8 max-w-lg mx-auto">
+            <SlidersHorizontal className="w-10 h-10 text-[#69756D] mx-auto mb-3" />
+            <h3 className="text-base font-bold text-[#202923] mb-1">
+              {isHi ? 'कोई योजना नहीं मिली' : 'No matching schemes found'}
             </h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-xs text-[#69756D] mb-4">
               {isHi
-                ? 'आपके खोज मापदंड से मेल खाती कोई योजना नहीं मिली। कृपया फ़िल्टर बदलें।'
-                : 'No schemes matched your search or category filter. Try clearing filters.'}
+                ? 'कृपया अपने खोज शब्दों या फ़िल्टर को बदलकर पुनः प्रयास करें।'
+                : 'Try adjusting your search query, selecting another category, or clearing state filters.'}
             </p>
             <button
               onClick={resetFilters}
-              className="px-4 py-2 bg-emerald-800 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition"
+              className="px-4 py-2 bg-[#173F35] hover:bg-[#2F6B52] text-[#FFFFFF] font-semibold rounded-lg text-xs transition cursor-pointer"
             >
-              {isHi ? 'फ़िल्टर हटाएं' : 'Clear Filters'}
+              {isHi ? 'सभी योजनाएं देखें' : 'View all schemes'}
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {schemes.map((scheme) => (
               <SchemeCard key={scheme.id} scheme={scheme} />
             ))}
@@ -218,13 +242,7 @@ function SchemesContent() {
 
 export default function SchemesPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="max-w-7xl mx-auto px-4 py-16 text-center text-gray-500 text-sm">
-          Loading government schemes...
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F5EF] p-8 text-center text-xs text-[#69756D]">Loading...</div>}>
       <SchemesContent />
     </Suspense>
   );

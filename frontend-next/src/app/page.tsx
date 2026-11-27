@@ -5,23 +5,25 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
 import { fetchSchemes, fetchCategories } from '../lib/api';
-import { Scheme } from '../lib/types';
+import type { Scheme } from '../lib/types';
 import SchemeCard from '../components/SchemeCard';
 import {
   Mic,
   Search,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Bot,
-  Layers,
-  HeartHandshake,
-  Users,
   Wheat,
   GraduationCap,
   HeartPulse,
-  Coins,
+  Briefcase,
   Baby,
+  Home,
+  CheckCircle2,
+  Landmark,
+  Scale,
+  Languages,
+  FileText,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -30,7 +32,7 @@ export default function HomePage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [featuredSchemes, setFeaturedSchemes] = useState<Scheme[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalSchemes, setTotalSchemes] = useState(0);
 
@@ -65,150 +67,232 @@ export default function HomePage() {
     }
   };
 
-  const categoryIcons: Record<string, any> = {
-    Agriculture: Wheat,
-    Healthcare: HeartPulse,
-    Education: GraduationCap,
-    'Social Security': Coins,
-    'Women & Child': Baby,
-  };
+  const civicCategories = [
+    {
+      id: 'Agriculture',
+      name: isHi ? 'कृषि एवं किसान कल्याण' : 'Agriculture',
+      desc: isHi ? 'किसान आय, फसल बीमा और सिंचाई अनुदान' : 'Farmer income support, crop insurance & subsidies',
+      icon: Wheat,
+    },
+    {
+      id: 'Education',
+      name: isHi ? 'शिक्षा एवं छात्रवृत्ति' : 'Education',
+      desc: isHi ? 'छात्रवृत्ति, उच्च शिक्षा शुल्क छूट और फ़ेलोशिप' : 'Pre/post-matric scholarships & fee concessions',
+      icon: GraduationCap,
+    },
+    {
+      id: 'Employment',
+      name: isHi ? 'रोजगार एवं कौशल' : 'Employment',
+      desc: isHi ? 'युवा कौशल प्रशिक्षण और स्वरोजगार योजनाएं' : 'Skill development, apprenticeships & job loans',
+      icon: Briefcase,
+    },
+    {
+      id: 'Women & Child',
+      name: isHi ? 'महिला एवं बाल विकास' : 'Women & Child',
+      desc: isHi ? 'मातृत्व पोषण, बालिका समृद्धि व सुरक्षा सहायता' : 'Maternity benefits, girl child savings & nutrition',
+      icon: Baby,
+    },
+    {
+      id: 'Housing',
+      name: isHi ? 'आवास एवं शहरी विकास' : 'Housing',
+      desc: isHi ? 'पक्के मकान निर्माण व ग्रामीण आवास अनुदान' : 'Pucca housing grants for rural & urban families',
+      icon: Home,
+    },
+    {
+      id: 'Healthcare',
+      name: isHi ? 'स्वास्थ्य एवं चिकित्सा' : 'Healthcare',
+      desc: isHi ? 'निःशुल्क चिकित्सा बीमा और स्वास्थ्य सुरक्षा कार्ड' : 'Universal medical coverage & cashless treatment',
+      icon: HeartPulse,
+    },
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50/60 via-white to-white py-16 sm:py-24 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          {/* Sovereign Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 text-xs font-semibold mb-6 shadow-2xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-700" />
+    <div className="flex flex-col min-h-screen bg-[#F7F5EF] text-[#202923]">
+      {/* Editorial Civic Hero */}
+      <section className="border-b border-[#E3E7E1] py-14 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Institutional Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E8F0E8] border border-[#E3E7E1] text-[#173F35] text-xs font-semibold mb-6">
+            <Landmark className="w-3.5 h-3.5 text-[#2F6B52]" />
             <span>
               {isHi
-                ? 'सत्यापित सरकारी पोर्टल (myScheme व भारत सरकार स्रोतों पर आधारित)'
-                : 'Verified Indian Government Welfare Portal Guidelines'}
+                ? 'प्रमाणित सरकारी डेटाबेस • आधिकारिक स्रोतों से संरेखित'
+                : 'National Citizen Welfare Platform • Grounded in Official Portals'}
             </span>
           </div>
 
-          {/* Main Headings */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-emerald-950 tracking-tight max-w-4xl mx-auto leading-tight sm:leading-none mb-4">
-            {isHi ? 'सरकारी योजनाओं की सही जानकारी, आसानी से।' : 'The Right Government Schemes, Made Simple.'}
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+          {/* Editorial Headline */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#202923] tracking-tight leading-tight mb-4">
             {isHi
-              ? 'अपनी भाषा और आवाज़ में जानिए कौन सी सरकारी योजना आपके लिए बनी है। पारदर्शी पात्रता नियम एवं बिना किसी भ्रामक जानकारी के।'
-              : 'Discover authentic central and state welfare benefits tailored to your profile through bilingual natural language and voice assistance.'}
+              ? 'सरकारी योजनाओं की सही जानकारी, अब और भी आसान।'
+              : 'Government schemes made easier to find.'}
+          </h1>
+
+          <p className="text-base sm:text-lg text-[#69756D] max-w-2xl mx-auto mb-8 leading-relaxed font-normal">
+            {isHi
+              ? 'अपनी प्रोफाइल, आवश्यकता और राज्य के अनुसार सत्यापित सरकारी योजनाओं का पता लगाएं। निष्पक्ष नियम, पारदर्शी पात्रता और सीधे आधिकारिक आवेदन लिंक।'
+              : 'Discover verified benefits tailored to your profile, needs, and state. Evaluated with transparent eligibility criteria grounded in official government gazettes.'}
           </p>
 
-          {/* Central Search & Voice Action Box */}
-          <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl shadow-emerald-900/5 border border-emerald-900/10 p-3 sm:p-4">
-            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-3">
+          {/* Primary Search Container (Minimal Fintech style) */}
+          <div className="max-w-2xl mx-auto bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-2.5 sm:p-3 shadow-xs mb-6">
+            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-2">
               <div className="relative flex-1 w-full">
-                <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#69756D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('searchPlaceholder')}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm sm:text-base"
+                  placeholder={
+                    isHi
+                      ? 'योजना का नाम, अपनी श्रेणी या ज़रूरत लिखें...'
+                      : 'Search by scheme name, category, or need...'
+                  }
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E3E7E1] bg-[#F7F5EF]/40 text-[#202923] placeholder:text-[#69756D] focus:outline-none focus:border-[#173F35] focus:bg-[#FFFFFF] text-sm transition"
                 />
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="submit"
-                  className="flex-1 sm:flex-none px-6 py-3.5 bg-emerald-800 hover:bg-emerald-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer shadow-sm"
+                  className="flex-1 sm:flex-none px-5 py-2.5 bg-[#173F35] hover:bg-[#2F6B52] text-[#FFFFFF] font-semibold rounded-lg text-sm transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
                 >
                   <Search className="w-4 h-4" />
-                  <span>{t('searchButton')}</span>
+                  <span>{isHi ? 'खोजें' : 'Search'}</span>
                 </button>
 
-                {/* Voice Assistant Shortcut Button */}
+                {/* Direct Voice Assistant Option */}
                 <Link
                   href="/assistant"
-                  className="px-4 py-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-xl transition flex items-center gap-2 font-medium text-sm group"
-                  title={t('voicePrompt')}
+                  className="px-3.5 py-2.5 bg-[#E8F0E8] hover:bg-[#dce8dc] text-[#173F35] border border-[#E3E7E1] rounded-lg text-sm font-semibold transition flex items-center gap-1.5"
+                  title={isHi ? 'आवाज से पूछें' : 'Ask with Voice'}
                 >
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-600"></span>
-                  </span>
-                  <Mic className="w-4 h-4 text-emerald-700 group-hover:scale-110 transition" />
-                  <span className="hidden sm:inline font-semibold">
-                    {isHi ? 'बोलकर पूछें' : 'Voice Assistant'}
+                  <Mic className="w-4 h-4 text-[#D99A42]" />
+                  <span className="hidden sm:inline">
+                    {isHi ? 'बोलकर पूछें' : 'Voice'}
                   </span>
                 </Link>
               </div>
             </form>
 
-            {/* Quick helper pills */}
-            <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500">
-              <span className="font-semibold text-gray-700">{isHi ? 'लोकप्रिय:' : 'Popular:'}</span>
+            {/* Quick Filter Chips */}
+            <div className="mt-2.5 pt-2.5 border-t border-[#E3E7E1] flex flex-wrap items-center justify-center gap-1.5 text-xs text-[#69756D]">
+              <span className="font-medium text-[#202923] mr-1">
+                {isHi ? 'लोकप्रिय खोजें:' : 'Quick shortcuts:'}
+              </span>
               <Link
-                href="/schemes?search=Kisan"
-                className="px-2.5 py-1 rounded-full bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 transition"
+                href="/schemes?category=Agriculture"
+                className="px-2.5 py-0.5 rounded-md bg-[#F7F5EF] hover:bg-[#E8F0E8] text-[#202923] border border-[#E3E7E1] transition"
               >
-                PM-KISAN (किसान)
+                {isHi ? 'किसान (Agriculture)' : 'Farmers'}
               </Link>
               <Link
-                href="/schemes?search=Arogya"
-                className="px-2.5 py-1 rounded-full bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 transition"
+                href="/schemes?category=Education"
+                className="px-2.5 py-0.5 rounded-md bg-[#F7F5EF] hover:bg-[#E8F0E8] text-[#202923] border border-[#E3E7E1] transition"
               >
-                Ayushman Bharat (स्वास्थ्य)
+                {isHi ? 'विद्यार्थी (Students)' : 'Students'}
               </Link>
               <Link
-                href="/schemes?search=Sukanya"
-                className="px-2.5 py-1 rounded-full bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 transition"
+                href="/schemes?category=Healthcare"
+                className="px-2.5 py-0.5 rounded-md bg-[#F7F5EF] hover:bg-[#E8F0E8] text-[#202923] border border-[#E3E7E1] transition"
               >
-                Sukanya Samriddhi (बालिका)
+                {isHi ? 'स्वास्थ्य (Healthcare)' : 'Healthcare'}
               </Link>
               <Link
-                href="/schemes?search=Pension"
-                className="px-2.5 py-1 rounded-full bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 transition"
+                href="/schemes?category=Women%20%26%20Child"
+                className="px-2.5 py-0.5 rounded-md bg-[#F7F5EF] hover:bg-[#E8F0E8] text-[#202923] border border-[#E3E7E1] transition"
               >
-                Atal Pension (पेंशन)
+                {isHi ? 'महिलाएं (Women)' : 'Women'}
               </Link>
+            </div>
+          </div>
+
+          {/* Civic Trust Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto text-left pt-4">
+            <div className="bg-[#FFFFFF] p-3 rounded-lg border border-[#E3E7E1] shadow-xs">
+              <div className="flex items-center gap-1.5 text-[#173F35] font-semibold text-xs mb-0.5">
+                <Scale className="w-3.5 h-3.5 text-[#2F6B52]" />
+                <span>{isHi ? 'सत्यापित नियम' : 'Deterministic Rules'}</span>
+              </div>
+              <p className="text-[11px] text-[#69756D] leading-tight">
+                {isHi ? 'तार्किक पात्रता मिलान' : 'Zero hallucination logic'}
+              </p>
+            </div>
+
+            <div className="bg-[#FFFFFF] p-3 rounded-lg border border-[#E3E7E1] shadow-xs">
+              <div className="flex items-center gap-1.5 text-[#173F35] font-semibold text-xs mb-0.5">
+                <Landmark className="w-3.5 h-3.5 text-[#2F6B52]" />
+                <span>{isHi ? 'आधिकारिक स्रोत' : 'Official Sources'}</span>
+              </div>
+              <p className="text-[11px] text-[#69756D] leading-tight">
+                {isHi ? 'myScheme से सत्यापित' : 'myScheme & Gazettes'}
+              </p>
+            </div>
+
+            <div className="bg-[#FFFFFF] p-3 rounded-lg border border-[#E3E7E1] shadow-xs">
+              <div className="flex items-center gap-1.5 text-[#173F35] font-semibold text-xs mb-0.5">
+                <Languages className="w-3.5 h-3.5 text-[#2F6B52]" />
+                <span>{isHi ? 'द्विभाषी सहायता' : 'Bilingual Support'}</span>
+              </div>
+              <p className="text-[11px] text-[#69756D] leading-tight">
+                {isHi ? 'हिंदी एवं अंग्रेजी' : 'Hindi & English'}
+              </p>
+            </div>
+
+            <div className="bg-[#FFFFFF] p-3 rounded-lg border border-[#E3E7E1] shadow-xs">
+              <div className="flex items-center gap-1.5 text-[#173F35] font-semibold text-xs mb-0.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#2F6B52]" />
+                <span>{isHi ? 'नागरिक गोपनीयता' : 'Privacy First'}</span>
+              </div>
+              <p className="text-[11px] text-[#69756D] leading-tight">
+                {isHi ? 'सुरक्षित व निःशुल्क' : 'No tracking or data sales'}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Categories Grid */}
-      <section className="py-14 bg-white border-b border-gray-100">
+      {/* Category Shortcuts Section */}
+      <section className="py-14 bg-[#FFFFFF] border-b border-[#E3E7E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {t('categoriesTitle')}
+              <div className="text-xs font-bold uppercase tracking-wider text-[#173F35] mb-1">
+                {isHi ? 'योजना श्रेणियां' : 'Category Shortcuts'}
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#202923] tracking-tight">
+                {isHi ? 'अपनी आवश्यकतानुसार योजनाएं खोजें' : 'Browse by Public Welfare Sector'}
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {isHi
-                  ? 'अपनी आवश्यकता के अनुसार सरकारी कल्याणकारी श्रेणियों का चयन करें'
-                  : 'Select public welfare categories tailored to your sector'}
-              </p>
             </div>
             <Link
               href="/schemes"
-              className="text-sm font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 group"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[#173F35] hover:text-[#2F6B52] transition"
             >
               <span>{t('viewAllSchemes')}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {categories.map((cat) => {
-              const Icon = categoryIcons[cat] || Layers;
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {civicCategories.map((cat) => {
+              const Icon = cat.icon;
               return (
                 <Link
-                  key={cat}
-                  href={`/schemes?category=${encodeURIComponent(cat)}`}
-                  className="p-5 rounded-xl border border-gray-200/80 hover:border-emerald-600/50 hover:bg-emerald-50/40 transition group flex flex-col items-center text-center shadow-2xs"
+                  key={cat.id}
+                  href={`/schemes?category=${encodeURIComponent(cat.id)}`}
+                  className="p-5 rounded-xl border border-[#E3E7E1] bg-[#FFFFFF] hover:bg-[#F7F5EF] hover:border-[#2F6B52]/40 transition group flex items-start gap-3.5"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-3 group-hover:bg-emerald-800 group-hover:text-white transition">
-                    <Icon className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-lg bg-[#E8F0E8] text-[#173F35] flex items-center justify-center shrink-0 group-hover:bg-[#173F35] group-hover:text-white transition-colors">
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <span className="font-semibold text-gray-800 group-hover:text-emerald-900 text-sm">
-                    {cat}
-                  </span>
+                  <div>
+                    <h3 className="font-bold text-[#202923] group-hover:text-[#173F35] text-base mb-1">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-[#69756D] leading-relaxed">
+                      {cat.desc}
+                    </p>
+                  </div>
                 </Link>
               );
             })}
@@ -216,41 +300,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Verified Schemes */}
-      <section className="py-16 bg-gray-50/70 border-b border-gray-100">
+      {/* Featured / Popular Schemes */}
+      <section className="py-14 bg-[#F7F5EF] border-b border-[#E3E7E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{isHi ? 'प्रमाणित सरकारी योजनाएं' : 'Verified Welfare Schemes'}</span>
+              <div className="text-xs font-bold uppercase tracking-wider text-[#173F35] mb-1">
+                {isHi ? 'प्रमाणित योजनाएं' : 'Featured Schemes'}
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900">
-                {isHi ? 'प्रमुख कल्याणकारी योजनाएं' : 'Featured Central & State Schemes'}
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#202923] tracking-tight">
+                {isHi ? 'प्रमुख कल्याणकारी योजनाएं' : 'Popular Central & State Schemes'}
               </h2>
             </div>
             <Link
               href="/schemes"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-800 font-semibold text-sm hover:bg-emerald-50 hover:text-emerald-900 transition self-start sm:self-auto shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFFFFF] border border-[#E3E7E1] text-[#202923] text-xs font-semibold hover:border-[#173F35] transition"
             >
               <span>{t('viewAllSchemes')}</span>
-              <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+              <span className="px-1.5 py-0.5 rounded bg-[#E8F0E8] text-[#173F35] font-bold">
                 {totalSchemes}
               </span>
             </Link>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="h-72 rounded-xl bg-white border border-gray-200 animate-pulse p-6"
+                  className="h-72 rounded-xl bg-[#FFFFFF] border border-[#E3E7E1] animate-pulse p-5"
                 />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {featuredSchemes.map((scheme) => (
                 <SchemeCard key={scheme.id} scheme={scheme} />
               ))}
@@ -259,70 +342,125 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How YojanaMitra Works Section */}
-      <section className="py-16 bg-white border-b border-gray-100">
+      {/* Three-step How It Works Section */}
+      <section className="py-16 bg-[#FFFFFF] border-b border-[#E3E7E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-3">{t('howItWorksTitle')}</h2>
-            <p className="text-gray-600 text-sm sm:text-base">
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <div className="text-xs font-bold uppercase tracking-wider text-[#173F35] mb-1">
+              {isHi ? 'प्रक्रिया' : 'How It Works'}
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#202923] tracking-tight mb-2">
+              {t('howItWorksTitle')}
+            </h2>
+            <p className="text-xs sm:text-sm text-[#69756D] leading-relaxed">
               {isHi
-                ? 'पारदर्शी और सत्यापन-योग्य प्रक्रिया, जहां कृत्रिम बुद्धिमत्ता और नियम-आधारित निष्पक्षता एक साथ काम करते हैं।'
-                : 'A transparent architecture ensuring accurate, non-hallucinated welfare discovery for every citizen.'}
+                ? 'सरल, निष्पक्ष व पारदर्शी 3 चरणों में अपनी योजनाएं खोजें।'
+                : 'A transparent 3-step workflow ensuring accurate welfare discovery.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100 relative">
-              <div className="w-12 h-12 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold text-lg mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-xl bg-[#F7F5EF] border border-[#E3E7E1]">
+              <div className="w-8 h-8 rounded-lg bg-[#173F35] text-[#FFFFFF] flex items-center justify-center font-bold text-sm mb-4">
                 1
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t('step1Title')}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{t('step1Desc')}</p>
+              <h3 className="text-base font-bold text-[#202923] mb-2">{t('step1Title')}</h3>
+              <p className="text-xs sm:text-sm text-[#69756D] leading-relaxed font-normal">
+                {t('step1Desc')}
+              </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100 relative">
-              <div className="w-12 h-12 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold text-lg mb-4">
+            <div className="p-6 rounded-xl bg-[#F7F5EF] border border-[#E3E7E1]">
+              <div className="w-8 h-8 rounded-lg bg-[#173F35] text-[#FFFFFF] flex items-center justify-center font-bold text-sm mb-4">
                 2
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t('step2Title')}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{t('step2Desc')}</p>
+              <h3 className="text-base font-bold text-[#202923] mb-2">{t('step2Title')}</h3>
+              <p className="text-xs sm:text-sm text-[#69756D] leading-relaxed font-normal">
+                {t('step2Desc')}
+              </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100 relative">
-              <div className="w-12 h-12 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold text-lg mb-4">
+            <div className="p-6 rounded-xl bg-[#F7F5EF] border border-[#E3E7E1]">
+              <div className="w-8 h-8 rounded-lg bg-[#173F35] text-[#FFFFFF] flex items-center justify-center font-bold text-sm mb-4">
                 3
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t('step3Title')}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{t('step3Desc')}</p>
+              <h3 className="text-base font-bold text-[#202923] mb-2">{t('step3Title')}</h3>
+              <p className="text-xs sm:text-sm text-[#69756D] leading-relaxed font-normal">
+                {t('step3Desc')}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Banner / Call to Action */}
-      <section className="py-14 bg-emerald-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="max-w-xl">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-              {isHi
-                ? 'अभी बोलकर या लिखकर अपनी पात्रता जांचें'
-                : 'Try the AI & Voice Scheme Assistant Now'}
-            </h2>
-            <p className="text-emerald-200 text-sm leading-relaxed">
-              {isHi
-                ? 'हिंदी और अंग्रेजी में तुरंत बातचीत करें और अपने परिवार के लिए उपलब्ध सभी लाभों का पता लगाएं।'
-                : 'Interactive conversational guidance powered by Google Gemini and verified Government of India datasets.'}
-            </p>
-          </div>
+      {/* Trust, Data Verification & Language Support Section */}
+      <section className="py-14 bg-[#F7F5EF] border-b border-[#E3E7E1]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#173F35]">
+                <FileText className="w-3.5 h-3.5 text-[#2F6B52]" />
+                <span>{isHi ? 'प्रमाणिकता एवं स्रोत' : 'Data Integrity & Official Sources'}</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#202923] tracking-tight">
+                {isHi
+                  ? 'सत्यापित सरकारी पोर्टल एवं नियम इंजन'
+                  : 'Grounded in Official Portals & Deterministic Rules'}
+              </h2>
+              <p className="text-xs sm:text-sm text-[#69756D] leading-relaxed">
+                {isHi
+                  ? 'योजनामित्र केवल आधिकारिक सरकारी गजट, myScheme.gov.in एवं भारत सरकार के मंत्रालयों द्वारा प्रकाशित नियमों पर काम करता है। हम किसी भी अनुमान या मतिभ्रम पर आधारित सलाह नहीं देते।'
+                  : 'YojanaMitra relies strictly on verified criteria published in official ministry portals and gazette notifications. Our deterministic rule engine evaluates eligibility without hallucination.'}
+              </p>
 
-          <Link
-            href="/assistant"
-            className="px-8 py-4 rounded-xl bg-white text-emerald-950 font-bold hover:bg-emerald-50 transition shadow-lg flex items-center gap-3 shrink-0"
-          >
-            <Bot className="w-5 h-5 text-emerald-700" />
-            <span>{isHi ? 'सहायक से बात करें' : 'Open AI Assistant'}</span>
-            <ArrowRight className="w-4 h-4 text-emerald-700" />
-          </Link>
+              <div className="space-y-2 pt-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2F6B52]" />
+                  <span className="font-medium text-[#202923]">
+                    {isHi ? 'द्विभाषी समर्थन (हिंदी और अंग्रेजी)' : 'Native Bilingual Interface (Hindi & English)'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2F6B52]" />
+                  <span className="font-medium text-[#202923]">
+                    {isHi ? 'प्रत्येक योजना के साथ मूल आधिकारिक आवेदन लिंक' : 'Direct official application links for all schemes'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2F6B52]" />
+                  <span className="font-medium text-[#202923]">
+                    {isHi ? 'सार्वजनिक डिजिटल सेवा • कोई शुल्क नहीं' : 'Public Digital Good • 100% Free Information Service'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Civic Callout Card */}
+            <div className="bg-[#173F35] text-[#FFFFFF] rounded-2xl p-7 sm:p-9 border border-[#2F6B52] shadow-sm">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#D99A42] mb-3">
+                <Bot className="w-4 h-4 text-[#D99A42]" />
+                <span>{isHi ? 'एआई एवं वॉइस सहायक' : 'Interactive Assistant'}</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-3 text-white">
+                {isHi
+                  ? 'बोलकर या लिखकर अपनी पात्रता तुरंत जांचें'
+                  : 'Ask in plain language with voice or text.'}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#E8F0E8]/80 mb-6 leading-relaxed">
+                {isHi
+                  ? 'अपनी उम्र, आय और आवश्यकता बताएं। हमारा नियम इंजन तुरंत आपको योग्य योजनाओं की सूची देगा।'
+                  : 'Speak naturally in Hindi or English to discover which welfare benefits your family qualifies for.'}
+              </p>
+
+              <Link
+                href="/assistant"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F7F5EF] text-[#173F35] font-semibold text-sm transition shadow-xs"
+              >
+                <span>{isHi ? 'सहायक प्रारंभ करें' : 'Open Scheme Assistant'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

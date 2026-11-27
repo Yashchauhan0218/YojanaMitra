@@ -8,13 +8,12 @@ import {
 } from '../lib/api';
 import type { Scheme } from '../lib/types';
 import {
-  ShieldCheck,
   Lock,
   PlusCircle,
-  CheckCircle2,
   RefreshCw,
   Clock,
   KeyRound,
+  Landmark,
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -64,7 +63,6 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    // Check saved key in session storage
     const saved = sessionStorage.getItem('ym_admin_key');
     if (saved) {
       setAdminKey(saved);
@@ -122,14 +120,13 @@ export default function AdminPage() {
       category: newCategory,
       sourceUrl: newSourceUrl.trim(),
       applicationUrl: newApplicationUrl.trim() || undefined,
-      status: 'PUBLISHED',
       criteria: [
         {
-          field: critField,
+          field: critField.trim(),
           operator: critOperator,
           value: parsedVal,
-          labelEn: critLabelEn,
-          labelHi: critLabelHi,
+          labelEn: critLabelEn.trim(),
+          labelHi: critLabelHi.trim(),
           isMandatory: true,
         },
       ],
@@ -137,53 +134,49 @@ export default function AdminPage() {
 
     try {
       await adminCreateScheme(payload, adminKey);
-      setStatusMessage(`Verified Scheme ${newCode} created successfully!`);
+      setStatusMessage(`Scheme "${payload.code}" created successfully.`);
       setShowAddModal(false);
-      // Reset form
-      setNewCode('');
-      setNewTitleEn('');
-      setNewTitleHi('');
-      setNewSummaryEn('');
-      setNewSummaryHi('');
-      setNewBenefitsEn('');
-      setNewBenefitsHi('');
-      setNewSourceUrl('');
-      setNewApplicationUrl('');
       loadAdminData();
     } catch (err: any) {
-      alert(`Error creating scheme: ${err.message}`);
+      alert(`Failed to create scheme: ${err.message}`);
     }
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10 sm:py-14">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full mb-2">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{isHi ? 'सुरक्षित प्रशासन पोर्टल' : 'Secure Admin Operations'}</span>
+    <div className="bg-[#F7F5EF] min-h-screen py-8 sm:py-12 text-[#202923]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Toolbar */}
+        <div className="bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-5 mb-8 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#173F35] text-white flex items-center justify-center shadow-xs">
+              <Landmark className="w-5 h-5 text-[#D99A42]" />
             </div>
-            <h1 className="text-3xl font-extrabold text-gray-900">
-              {isHi ? 'योजनामित्र प्रशासन एवं सत्यापन' : 'YojanaMitra Admin Portal'}
-            </h1>
+            <div>
+              <h1 className="text-lg font-bold text-[#202923] tracking-tight">
+                {isHi ? 'प्रशासन एवं योजना प्रबंधन' : 'Civic Admin & Scheme Management'}
+              </h1>
+              <p className="text-xs text-[#69756D]">
+                {isHi
+                  ? 'सरकारी योजनाओं का प्रकाशन, संपादन एवं ऑडिट ट्रेल'
+                  : 'Authenticated public record governance & deterministic criteria'}
+              </p>
+            </div>
           </div>
 
           {isAuthenticated && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2.5 bg-emerald-800 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-xs"
+                className="px-3.5 py-2 bg-[#173F35] hover:bg-[#2F6B52] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
-                <PlusCircle className="w-4 h-4" />
-                <span>{isHi ? 'नई योजना जोड़ें' : 'Add New Scheme'}</span>
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>{isHi ? 'नई योजना जोड़ें' : 'Add Scheme'}</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="px-3 py-2.5 border border-gray-300 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold transition"
+                className="px-3 py-2 border border-[#E3E7E1] bg-[#FFFFFF] hover:bg-[#FCEEEE] hover:text-[#8E3030] text-[#202923] rounded-lg text-xs font-semibold transition cursor-pointer"
               >
-                {isHi ? 'लॉगआउट' : 'Lock Session'}
+                {isHi ? 'लॉगआउट' : 'Log Out'}
               </button>
             </div>
           )}
@@ -191,60 +184,59 @@ export default function AdminPage() {
 
         {/* Status Message */}
         {statusMessage && (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-4 rounded-xl text-sm mb-6 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-            <span>{statusMessage}</span>
+          <div className="mb-6 p-3 bg-[#EAF4EE] text-[#1B6A47] border border-[#C8E6D3] rounded-lg text-xs font-semibold">
+            {statusMessage}
           </div>
         )}
 
         {/* Authentication Wall if not logged in */}
         {!isAuthenticated ? (
-          <div className="max-w-md mx-auto bg-white rounded-2xl border border-gray-200/80 p-8 shadow-sm text-center">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6" />
+          <div className="max-w-md mx-auto bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-8 shadow-xs text-center">
+            <div className="w-10 h-10 rounded-lg bg-[#E8F0E8] text-[#173F35] flex items-center justify-center mx-auto mb-4 border border-[#E3E7E1]">
+              <Lock className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-base font-bold text-[#202923] mb-1">
               {isHi ? 'प्रशासन प्रमाणीकरण आवश्यक' : 'Admin Authorization Required'}
             </h2>
-            <p className="text-xs text-gray-500 mb-6">
+            <p className="text-xs text-[#69756D] mb-5 leading-relaxed">
               {isHi
                 ? 'योजनाओं के प्रकाशन और संशोधन के लिए बैकएंड ADMIN_API_KEY दर्ज करें।'
-                : 'Enter your server ADMIN_API_KEY (default: "admin-secret-token-change-in-production") to unlock management operations.'}
+                : 'Enter your server ADMIN_API_KEY to unlock scheme management operations.'}
             </p>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-3">
               <div>
                 <input
                   type="password"
                   value={adminKey}
                   onChange={(e) => setAdminKey(e.target.value)}
                   placeholder="Enter ADMIN_API_KEY..."
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E3E7E1] text-xs focus:outline-none focus:border-[#173F35] bg-[#F7F5EF]/30 focus:bg-[#FFFFFF]"
                 />
               </div>
 
-              {authError && <p className="text-xs text-red-600">{authError}</p>}
+              {authError && <p className="text-xs text-[#8E3030] font-semibold">{authError}</p>}
 
               <button
                 type="submit"
-                className="w-full py-3 bg-emerald-800 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-[#173F35] hover:bg-[#2F6B52] text-white font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
               >
-                <KeyRound className="w-4 h-4" />
+                <KeyRound className="w-3.5 h-3.5" />
                 <span>{isHi ? 'सत्यापित करें एवं प्रवेश करें' : 'Authorize & Enter'}</span>
               </button>
             </form>
           </div>
         ) : (
-          <div className="space-y-8">
-            {/* Schemes Management Table */}
-            <div className="bg-white rounded-2xl border border-gray-200/80 overflow-hidden shadow-xs">
-              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="font-bold text-gray-900 text-base">
+          <div className="space-y-6">
+            {/* Schemes Management Table (Minimal Fintech table) */}
+            <div className="bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] overflow-hidden shadow-xs">
+              <div className="p-4 sm:p-5 border-b border-[#E3E7E1] flex items-center justify-between">
+                <h2 className="font-bold text-[#202923] text-sm">
                   {isHi ? 'पंजीकृत योजनाएं (प्रकाशन स्थिति)' : 'Registered Schemes (Publishing Status)'}
                 </h2>
                 <button
                   onClick={loadAdminData}
-                  className="text-xs text-emerald-800 hover:underline flex items-center gap-1 font-semibold"
+                  className="text-xs text-[#173F35] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>{isHi ? 'ताज़ा करें' : 'Refresh'}</span>
@@ -253,44 +245,44 @@ export default function AdminPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-gray-50 text-gray-700 uppercase font-semibold border-b border-gray-200">
+                  <thead className="bg-[#F7F5EF] text-[#69756D] uppercase font-semibold border-b border-[#E3E7E1]">
                     <tr>
-                      <th className="px-5 py-3">Code / Name</th>
-                      <th className="px-5 py-3">Category</th>
-                      <th className="px-5 py-3">Criteria Count</th>
-                      <th className="px-5 py-3">Status</th>
-                      <th className="px-5 py-3 text-right">Actions</th>
+                      <th className="px-4 py-2.5">Code / Name</th>
+                      <th className="px-4 py-2.5">Category</th>
+                      <th className="px-4 py-2.5">Criteria Count</th>
+                      <th className="px-4 py-2.5">Status</th>
+                      <th className="px-4 py-2.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-[#E3E7E1]">
                     {schemes.map((s) => (
-                      <tr key={s.id} className="hover:bg-gray-50/60 transition">
-                        <td className="px-5 py-3.5">
-                          <span className="font-bold text-gray-900 block font-mono">{s.code}</span>
-                          <span className="text-gray-500 line-clamp-1">{s.titleEn}</span>
+                      <tr key={s.id} className="hover:bg-[#F7F5EF]/50 transition">
+                        <td className="px-4 py-3">
+                          <span className="font-bold text-[#202923] block font-mono">{s.code}</span>
+                          <span className="text-[#69756D] line-clamp-1">{s.titleEn}</span>
                         </td>
-                        <td className="px-5 py-3.5 text-gray-700">{s.category}</td>
-                        <td className="px-5 py-3.5 text-gray-700 font-medium">
+                        <td className="px-4 py-3 text-[#202923]">{s.category}</td>
+                        <td className="px-4 py-3 text-[#69756D] font-medium">
                           {s.criteria?.length || 0} rules
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className="px-4 py-3">
                           <span
-                            className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                            className={`px-2 py-0.5 rounded-md font-semibold text-[10px] border ${
                               s.status === 'PUBLISHED'
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                ? 'bg-[#EAF4EE] text-[#1B6A47] border-[#C8E6D3]'
                                 : s.status === 'DRAFT'
-                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                : 'bg-gray-100 text-gray-800'
+                                ? 'bg-[#FCF5E8] text-[#9E6714] border-[#F5DFB5]'
+                                : 'bg-[#F7F5EF] text-[#69756D] border-[#E3E7E1]'
                             }`}
                           >
                             {s.status}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-right space-x-1.5">
+                        <td className="px-4 py-3 text-right space-x-1.5">
                           {s.status !== 'PUBLISHED' && (
                             <button
                               onClick={() => handleStatusChange(s.id, 'PUBLISHED')}
-                              className="px-2.5 py-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-md font-semibold transition"
+                              className="px-2.5 py-1 bg-[#EAF4EE] text-[#1B6A47] hover:bg-[#d8ecdf] rounded-md font-semibold transition cursor-pointer"
                             >
                               Publish
                             </button>
@@ -298,7 +290,7 @@ export default function AdminPage() {
                           {s.status !== 'DRAFT' && (
                             <button
                               onClick={() => handleStatusChange(s.id, 'DRAFT')}
-                              className="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-md font-semibold transition"
+                              className="px-2.5 py-1 bg-[#FCF5E8] text-[#9E6714] hover:bg-[#faeed6] rounded-md font-semibold transition cursor-pointer"
                             >
                               Draft
                             </button>
@@ -306,7 +298,7 @@ export default function AdminPage() {
                           {s.status !== 'ARCHIVED' && (
                             <button
                               onClick={() => handleStatusChange(s.id, 'ARCHIVED')}
-                              className="px-2.5 py-1 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md font-semibold transition"
+                              className="px-2.5 py-1 bg-[#F7F5EF] text-[#69756D] hover:bg-[#E8F0E8] rounded-md font-semibold transition cursor-pointer"
                             >
                               Archive
                             </button>
@@ -320,27 +312,27 @@ export default function AdminPage() {
             </div>
 
             {/* Audit Logs Box */}
-            <div className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-xs">
-              <h2 className="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-emerald-700" />
+            <div className="bg-[#FFFFFF] rounded-xl border border-[#E3E7E1] p-5 shadow-xs">
+              <h2 className="font-bold text-[#202923] text-sm mb-3 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#2F6B52]" />
                 <span>{isHi ? 'प्रशासन ऑडिट लॉग्स' : 'Administrative Audit Logs'}</span>
               </h2>
 
               {auditLogs.length === 0 ? (
-                <div className="text-xs text-gray-500 italic p-4 text-center bg-gray-50 rounded-xl">
+                <div className="text-xs text-[#69756D] italic p-4 text-center bg-[#F7F5EF]/60 rounded-lg border border-[#E3E7E1]">
                   {isHi ? 'अभी तक कोई ऑडिट लॉग रिकॉर्ड नहीं हुआ है।' : 'No audit records logged yet.'}
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100 text-xs">
+                <div className="divide-y divide-[#E3E7E1] text-xs">
                   {auditLogs.map((log) => (
                     <div key={log.id} className="py-2.5 flex items-center justify-between">
                       <div>
-                        <span className="font-bold text-gray-800 mr-2">{log.adminAction}</span>
-                        <span className="text-gray-500 font-mono">
+                        <span className="font-semibold text-[#202923] mr-2">{log.adminAction}</span>
+                        <span className="text-[#69756D] font-mono text-[11px]">
                           {log.entityType} ({JSON.stringify(log.metadata)})
                         </span>
                       </div>
-                      <span className="text-gray-400">
+                      <span className="text-[#69756D] text-[11px]">
                         {new Date(log.timestamp).toLocaleString()}
                       </span>
                     </div>
@@ -353,39 +345,39 @@ export default function AdminPage() {
 
         {/* Modal: Create Scheme */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
-              <div className="flex items-center justify-between mb-4 border-b pb-3">
-                <h3 className="text-lg font-bold text-gray-900">
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+            <div className="bg-[#FFFFFF] rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-lg border border-[#E3E7E1]">
+              <div className="flex items-center justify-between mb-4 border-b border-[#E3E7E1] pb-3">
+                <h3 className="text-base font-bold text-[#202923]">
                   {isHi ? 'नई योजना जोड़ें (सत्यापित विवरण)' : 'Add Verified Government Scheme'}
                 </h3>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-sm font-bold"
+                  className="text-[#69756D] hover:text-[#202923] text-xs font-bold"
                 >
                   ✕
                 </button>
               </div>
 
-              <form onSubmit={handleCreateScheme} className="space-y-4 text-xs">
+              <form onSubmit={handleCreateScheme} className="space-y-3.5 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Scheme Code</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Scheme Code</label>
                     <input
                       type="text"
                       required
                       value={newCode}
                       onChange={(e) => setNewCode(e.target.value)}
                       placeholder="e.g. PM-AWAS-GRAMIN"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Category</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Category</label>
                     <select
                       value={newCategory}
                       onChange={(e) => setNewCategory(e.target.value)}
-                      className="w-full p-2.5 border rounded-lg bg-white"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     >
                       <option value="Agriculture">Agriculture</option>
                       <option value="Healthcare">Healthcare</option>
@@ -399,117 +391,117 @@ export default function AdminPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Title (English)</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Title (English)</label>
                     <input
                       type="text"
                       required
                       value={newTitleEn}
                       onChange={(e) => setNewTitleEn(e.target.value)}
                       placeholder="e.g. Pradhan Mantri Awas Yojana"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Title (Hindi)</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Title (Hindi)</label>
                     <input
                       type="text"
                       required
                       value={newTitleHi}
                       onChange={(e) => setNewTitleHi(e.target.value)}
                       placeholder="e.g. प्रधानमंत्री आवास योजना"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-medium text-gray-700 mb-1">Summary (English)</label>
+                  <label className="block font-semibold text-[#202923] mb-1">Summary (English)</label>
                   <textarea
                     required
                     rows={2}
                     value={newSummaryEn}
                     onChange={(e) => setNewSummaryEn(e.target.value)}
                     placeholder="Clear English summary..."
-                    className="w-full p-2.5 border rounded-lg"
+                    className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-medium text-gray-700 mb-1">Summary (Hindi)</label>
+                  <label className="block font-semibold text-[#202923] mb-1">Summary (Hindi)</label>
                   <textarea
                     required
                     rows={2}
                     value={newSummaryHi}
                     onChange={(e) => setNewSummaryHi(e.target.value)}
                     placeholder="सरल हिंदी सारांश..."
-                    className="w-full p-2.5 border rounded-lg"
+                    className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Benefits (English)</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Benefits (English)</label>
                     <input
                       type="text"
                       required
                       value={newBenefitsEn}
                       onChange={(e) => setNewBenefitsEn(e.target.value)}
                       placeholder="e.g. ₹1,20,000 for housing construction"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Benefits (Hindi)</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Benefits (Hindi)</label>
                     <input
                       type="text"
                       required
                       value={newBenefitsHi}
                       onChange={(e) => setNewBenefitsHi(e.target.value)}
                       placeholder="e.g. आवास निर्माण हेतु ₹1,20,000"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Official Source URL</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Official Source URL</label>
                     <input
                       type="url"
                       required
                       value={newSourceUrl}
                       onChange={(e) => setNewSourceUrl(e.target.value)}
                       placeholder="https://pmayg.nic.in"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Application URL (optional)</label>
+                    <label className="block font-semibold text-[#202923] mb-1">Application URL (optional)</label>
                     <input
                       type="url"
                       value={newApplicationUrl}
                       onChange={(e) => setNewApplicationUrl(e.target.value)}
                       placeholder="https://pmayg.nic.in/apply"
-                      className="w-full p-2.5 border rounded-lg"
+                      className="w-full p-2 border border-[#E3E7E1] rounded-lg bg-[#F7F5EF]/30 focus:bg-[#FFFFFF] focus:outline-none focus:border-[#173F35]"
                     />
                   </div>
                 </div>
 
                 {/* Primary Criterion Builder */}
-                <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="font-bold text-gray-800 block mb-2">Initial Rule Criterion</span>
+                <div className="p-3 bg-[#F7F5EF] rounded-lg border border-[#E3E7E1]">
+                  <span className="font-bold text-[#202923] block mb-2">Initial Rule Criterion</span>
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     <input
                       type="text"
                       value={critField}
                       onChange={(e) => setCritField(e.target.value)}
                       placeholder="field (age, income)"
-                      className="p-2 border rounded"
+                      className="p-1.5 border border-[#E3E7E1] rounded bg-white text-xs"
                     />
                     <select
                       value={critOperator}
                       onChange={(e) => setCritOperator(e.target.value)}
-                      className="p-2 border rounded bg-white"
+                      className="p-1.5 border border-[#E3E7E1] rounded bg-white text-xs"
                     >
                       <option value="gte">gte (&gt;=)</option>
                       <option value="lte">lte (&lt;=)</option>
@@ -521,7 +513,7 @@ export default function AdminPage() {
                       value={critValue}
                       onChange={(e) => setCritValue(e.target.value)}
                       placeholder="value"
-                      className="p-2 border rounded"
+                      className="p-1.5 border border-[#E3E7E1] rounded bg-white text-xs"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -530,14 +522,14 @@ export default function AdminPage() {
                       value={critLabelEn}
                       onChange={(e) => setCritLabelEn(e.target.value)}
                       placeholder="Criterion Label (English)"
-                      className="p-2 border rounded"
+                      className="p-1.5 border border-[#E3E7E1] rounded bg-white text-xs"
                     />
                     <input
                       type="text"
                       value={critLabelHi}
                       onChange={(e) => setCritLabelHi(e.target.value)}
                       placeholder="Criterion Label (Hindi)"
-                      className="p-2 border rounded"
+                      className="p-1.5 border border-[#E3E7E1] rounded bg-white text-xs"
                     />
                   </div>
                 </div>
@@ -546,13 +538,13 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-100"
+                    className="px-3.5 py-1.5 border border-[#E3E7E1] rounded-lg text-[#69756D] hover:bg-[#F7F5EF]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-xs"
+                    className="px-4 py-1.5 bg-[#173F35] hover:bg-[#2F6B52] text-white font-semibold rounded-lg shadow-xs"
                   >
                     Save & Publish
                   </button>
